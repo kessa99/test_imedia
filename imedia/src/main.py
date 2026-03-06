@@ -5,6 +5,8 @@ fichier principale de lancement du projet
 from fastapi import FastAPI, Request, status
 from datetime import datetime
 
+from src.config.init_db import init_db
+
 app = FastAPI()
 
 def create_app():
@@ -26,7 +28,7 @@ async def database_connection():
     """
     connexion à la base de données
     """
-    pass
+    init_db()
 
 @app.get("/health", tags=["health"])
 def health_check():
