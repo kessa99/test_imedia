@@ -1,0 +1,17 @@
+.git
+.gitignore
+__pycache__
+**/__pycache__
+**/*.pyc
+**/*.pyo
+.env
+.python-version
+.venv
+venv
+*.egg-info
+dist
+build
+.pytest_cache
+.mypy_cache
+docs
+README.md

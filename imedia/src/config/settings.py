@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
     DATABASE_URL: str = ""
+    API_PORT: int = 8000
+
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
