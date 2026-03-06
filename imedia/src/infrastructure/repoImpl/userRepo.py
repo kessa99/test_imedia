@@ -38,4 +38,11 @@ class UserRepoImpl:
         users = self.session.query(User).all()
         return [map_user_model_to_entity(user) for user in users]
 
-    
+    def find_by_mail(self, email: str) -> UserEntity:
+        """
+        recherche d'un utilisateur par son email
+        """
+        user_model = self.session.query(User).filter(User.email == email).first()
+        if user_model is None:
+            return None
+        return map_user_model_to_entity(user_model)
