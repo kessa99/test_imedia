@@ -1,12 +1,24 @@
 """
-connexion à la base de données et initialisation des modèles
+Connexion à la base de données et générateur de session
 """
 
+from typing import Generator
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from config.settings import settings
+from sqlalchemy.orm import sessionmaker, Session
+
+from src.config.settings import settings
 
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+
+
+def get_db() -> Generator[Session, None, None]:
+    """
+    Générateur de session SQLAlchemy pour l'injection de dépendances FastAPI (Depends).
+    Garantit la fermeture de la session après chaque requête.
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

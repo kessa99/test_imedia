@@ -1,21 +1,19 @@
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
+from urllib.parse import quote_plus
 
 from src.config.settings import settings
-from src.infrastructure.schemas.baseModel import Base
-
-# Importer tous les modèles pour qu'Alembic les détecte automatiquement
-import src.infrastructure.schemas.userAndPermission.userModel
+from src.infrastructure.model.base import Base
 
 
 config = context.config
 
-config.set_main_option(
-    "sqlalchemy.url",
-    f"postgresql://{settings.db_user}:{settings.db_password}"
-    f"@{settings.db_host}:{settings.db_port}/{settings.db_name}"
-)
+db_url = (
+    f"postgresql://{settings.DB_USER}:{quote_plus(settings.DB_PASSWORD)}"
+    f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+).replace("%", "%%")
+config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

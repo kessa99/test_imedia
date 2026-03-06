@@ -1,21 +1,16 @@
 """
-service pour s'assurer que les champs ne sont pas vide
+Service pour vérifier qu'un champ n'est pas vide
 """
 
-class check_empty:
+
+def check_empty(name: str, email: str, password: str) -> None:
     """
-    service pour s'assurer que les champs ne sont pas vide
+    Lève une ValueError si l'un des champs est vide.
+    Note: avec Pydantic (RegisterDTO), cette validation est déjà faite en amont.
     """
-
-    def check_empty(self, name, email, password):
-        """
-        service pour s'assurer que le nom ne soit pas vide
-        """
-        if not name:
-            raise ValueError("Le nom est obligatoire")
-
-        if not email:
-            raise ValueError("L'email est obligatoire")
-
-        if not password:
-            raise ValueError("Le mot de passe est obligatoire")
+    if not name:
+        raise ValueError("Le nom est obligatoire")
+    if not email:
+        raise ValueError("L'email est obligatoire")
+    if not password:
+        raise ValueError("Le mot de passe est obligatoire")
