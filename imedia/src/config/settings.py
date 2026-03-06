@@ -4,6 +4,7 @@ configuration des variables d'environnement
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
+from pydantic import Field
 
 class Settings(BaseSettings):
     """

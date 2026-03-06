@@ -15,13 +15,13 @@ def create_app():
     app = FastAPI(
         title="IMedia",
         description="",
-        version=""
+        version="1.0.0"
     )
 
     return app
 app = create_app()
 
-@pp.on_event("startup")
+@app.on_event("startup")
 async def database_connection():
     """
     connexion à la base de données
