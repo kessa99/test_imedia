@@ -225,3 +225,134 @@ Pas de logs du tout
 ---
 
 La règle d'or : **les logs d'abord, toujours**. Dans la grande majorité des cas la réponse est là.
+
+---
+
+## Architecture & Choix de stack
+
+### Stack technique
+
+| Couche | Choix | Raison |
+|---|---|---|
+| **Framework** | FastAPI | Performances, typage natif, doc auto OpenAPI |
+| **ORM / migrations** | SQLAlchemy + Alembic | Contrôle fin des migrations, pas de magie cachée |
+| **Base de données** | PostgreSQL 16 | Fiabilité, support JSON, disponibilité sur tous les clouds |
+| **Serveur ASGI** | Uvicorn | Léger, recommandé par FastAPI |
+| **Validation** | Pydantic v2 | Intégré à FastAPI, validation automatique des DTO |
+| **Tests** | Pytest | Ecosystème riche, fixtures puissantes |
+| **Conteneurisation** | Docker + Docker Compose | Reproductibilité, isolation |
+| **CI/CD** | GitHub Actions | Natif GitHub, gratuit pour les dépôts publics |
+
+### Architecture en couches (Clean Architecture)
+
+```
+src/
+├── interface/        → Contrôleurs HTTP (routes FastAPI)
+├── application/
+│   ├── dto/          → Data Transfer Objects (validation entrée/sortie)
+│   ├── useCase/      → Logique métier (orchestration)
+│   ├── service/      → Services de validation (email, mot de passe…)
+│   ├── repositories/ → Interfaces (contrats)
+│   └── entities/     → Entités métier pures
+├── infrastructure/
+│   ├── model/        → Modèles SQLAlchemy (persistence)
+│   ├── repoImpl/     → Implémentation des repositories
+│   └── mappers/      → Conversion entité ↔ modèle
+└── config/           → Connexion DB, settings, init
+```
+
+La règle fondamentale : les couches internes (`entities`, `useCase`) ne connaissent pas les couches externes. L'infrastructure dépend de l'application, jamais l'inverse.
+
+---
+
+## Instructions de démarrage
+
+### Prérequis
+
+- Docker & Docker Compose installés
+- Git
+
+### Démarrage avec Docker Compose
+
+```bash
+# 1. Cloner le dépôt
+git clone <url-du-repo>
+cd test_imedia/imedia
+
+# 2. Copier et remplir le fichier d'environnement
+cp .env.exemple .env
+# Éditer .env avec vos valeurs
+
+# 3. Lancer l'API et la base de données
+docker compose up --build
+
+# L'API est disponible sur http://localhost:<API_PORT>
+# Documentation interactive : http://localhost:<API_PORT>/docs
+# Santé : http://localhost:<API_PORT>/health
+```
+
+### Démarrage en local (développement)
+
+```bash
+cd imedia
+
+# Installer les dépendances avec Poetry
+pip install poetry
+poetry install
+
+# Copier et remplir le fichier d'environnement
+cp .env.exemple .env
+
+# Lancer l'application
+poetry run uvicorn src.main:app --reload --port 8000
+```
+
+### Migrations Alembic
+
+```bash
+# Appliquer les migrations
+poetry run alembic upgrade head
+
+# Créer une nouvelle migration
+poetry run alembic revision --autogenerate -m "description"
+```
+
+---
+
+## Commandes de test
+
+```bash
+# Tous les tests
+poetry run pytest tests/ -v
+
+# Tests unitaires uniquement
+poetry run pytest tests/unitest/ -v
+
+# Tests d'intégration
+poetry run pytest tests/integration/ -v
+
+# Tests e2e
+poetry run pytest tests/e2e/ -v
+
+# Avec couverture de code
+poetry run pytest tests/ --cov=src --cov-report=term-missing
+```
+
+
+## Ce que j'aurais amélioré avec plus de temps
+
+### Sécurité
+- Rate limiting sur les routes publiques (inscription, connexion)
+- Scanner l'image Docker avec Trivy dans la CI avant le push
+
+### Qualité du code
+- Tests e2e complets avec base de données dédiée en mémoire
+
+### Infrastructure
+- Ajouter un job `deploy` réel (SSH, Kubernetes, ou Render)
+
+
+### Fonctionnalités
+- Pagination sur la route `GET /users`
+- Soft delete plutôt que suppression définitive
+- Endpoint de mise à jour partielle (`PATCH`) avec validation fine
