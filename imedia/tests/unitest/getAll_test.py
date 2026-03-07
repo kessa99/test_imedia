@@ -2,10 +2,16 @@
 Test unitaire pour la récupération de tous les utilisateurs use case
 """
 
+from datetime import datetime
+from unittest.mock import MagicMock
+from uuid import uuid4
+
 from src.application.dto.user_response import UserResponseDTO
 from src.application.useCase.get_all import GetAllUseCase
 from src.application.repositories.user_repository import IUserRepository
 from src.application.entities.user import UserEntity
+
+now = datetime.utcnow()
 
 class MockUserRepository(IUserRepository):
     """

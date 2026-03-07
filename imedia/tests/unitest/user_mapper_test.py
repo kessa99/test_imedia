@@ -1,10 +1,14 @@
 """
 Test unitaire pour le mapper utilisateur
 """
+from uuid import uuid4
+from datetime import datetime
 
-from src.application.mappers.userMapper import userEntityToUserModel, userModelToUserEntity
+from src.infrastructure.mappers.user_mapper import user_entity_to_model, user_model_to_entity
 from src.infrastructure.model.user_model import User
 from src.application.entities.user import UserEntity
+
+now = datetime.utcnow()
 
 def test_user_model_to_user_entity():
     """
@@ -18,7 +22,7 @@ def test_user_model_to_user_entity():
         created_at=now,
         updated_at=now
     )
-    user_entity = userModelToUserEntity(user)
+    user_entity = user_model_to_entity(user)
     assert user_entity.id == user.id
     assert user_entity.name == user.name
     assert user_entity.email == user.email
@@ -38,7 +42,7 @@ def test_user_entity_to_user_model():
         created_at=now,
         updated_at=now
     )
-    user_model = userEntityToUserModel(user)
+    user_model = user_entity_to_model(user)
     assert user_model.id == user.id
     assert user_model.name == user.name
     assert user_model.email == user.email

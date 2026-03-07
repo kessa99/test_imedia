@@ -1,0 +1,30 @@
+services:
+
+  postgres-test:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d test_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  tests:
+    build:
+      context: .
+      dockerfile: DockerFile
+    working_dir: /app
+    command: pytest tests/ -v --tb=short
+    environment:
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_NAME: test_db
+      DB_USER: test
+      DB_PASSWORD: test
+      API_PORT: 8000
+    depends_on:
+      postgres-test:
+        condition: service_healthy

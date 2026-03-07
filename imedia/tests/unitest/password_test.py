@@ -2,7 +2,7 @@
 tester le hasher et le vérificateur de mot de passe
 """
 
-from src.application.service.checkPassword import PasswordService
+from src.application.service.password_service import PasswordService
 
 def test_hash_returns_string_with_salt_and_key():
     """
